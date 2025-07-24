@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>NutriDeep - Chat Seguro</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="hero">
+    <h1>NutriDeep</h1>
+
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Usuario" autocomplete="username" />
+      <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" />
+      <button type="button" id="loginBtn">Iniciar sesión</button>
+      <div id="errorMsg"></div>
+    </form>
+
+    <div id="chatContainer"></div>
+
+    <div class="input-section" id="inputSection" style="display:none;">
+      <input type="text" id="chatInput" placeholder="Escribe tu mensaje y presiona Enter..." autocomplete="off" />
+      <button id="sendBtn">Enviar</button>
+    </div>
+
+    <button id="logoutBtn" style="display:none;">Cerrar sesión</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
