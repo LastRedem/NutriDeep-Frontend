@@ -12,27 +12,21 @@ const passwordInput = document.getElementById("password");
 const chatInput = document.getElementById("chatInput");
 const sendBtn = document.getElementById("sendBtn");
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'https://nutrideep-backend.onrender.com';
 
-// Función para mostrar mensajes en el chat (procesa Markdown para bot)
+// Mostrar mensajes
 function appendMessage(text, sender) {
   const msgDiv = document.createElement("div");
   msgDiv.classList.add("message", sender);
-  if (sender === "bot") {
-    msgDiv.innerHTML = marked.parse(text);
-  } else {
-    msgDiv.textContent = text;
-  }
+  msgDiv.innerHTML = sender === "bot" ? marked.parse(text) : text;
   chatContainer.appendChild(msgDiv);
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-// Limpia mensajes
 function clearMessages() {
   chatContainer.innerHTML = "";
 }
 
-// Mostrar UI chat tras login
 function showChatUI() {
   loginForm.style.display = "none";
   chatContainer.style.display = "flex";
@@ -42,7 +36,6 @@ function showChatUI() {
   chatInput.focus();
 }
 
-// Ocultar UI chat (mostrar login)
 function showLoginUI() {
   loginForm.style.display = "flex";
   chatContainer.style.display = "none";
@@ -54,7 +47,6 @@ function showLoginUI() {
   clearMessages();
 }
 
-// Login
 async function login() {
   const username = usernameInput.value.trim();
   const password = passwordInput.value.trim();
@@ -63,30 +55,21 @@ async function login() {
     errorMsg.textContent = "Completa ambos campos";
     return;
   }
-  errorMsg.textContent = "";
 
   try {
-    const res = await fetch(API_BASE + "/login", {
+    const res = await fetch(`${API_BASE}/login`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
     });
     const data = await res.json();
-
-    if (data.success) {
-      showChatUI();
-    } else {
-      errorMsg.textContent = data.message || "Error en login";
-    }
+    data.success ? showChatUI() : errorMsg.textContent = data.message || "Error en login";
   } catch {
     errorMsg.textContent = "Error de conexión";
   }
 }
 
-loginBtn.addEventListener("click", login);
-
-// Enviar mensaje (botón y Enter)
 async function sendMessage() {
   const msg = chatInput.value.trim();
   if (!msg) return;
@@ -95,35 +78,28 @@ async function sendMessage() {
   chatInput.value = "";
 
   try {
-    const res = await fetch(API_BASE + "/api/chat", {
+    const res = await fetch(`${API_BASE}/api/chat`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: msg }),
     });
     const data = await res.json();
-
-    if (res.ok && data.reply) {
-      appendMessage(data.reply, "bot");
-    } else {
-      appendMessage("Error al obtener respuesta", "bot");
-    }
+    appendMessage(data.reply || "Error al obtener respuesta", "bot");
   } catch {
     appendMessage("Error de conexión con el servidor", "bot");
   }
 }
 
+loginBtn.addEventListener("click", login);
 sendBtn.addEventListener("click", sendMessage);
 chatInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    sendMessage();
-  }
+  if (e.key === "Enter") sendMessage();
 });
 
-// Logout
 logoutBtn.addEventListener("click", async () => {
   try {
-    await fetch(API_BASE + "/logout", {
+    await fetch(`${API_BASE}/logout`, {
       method: "POST",
       credentials: "include",
     });
@@ -131,5 +107,4 @@ logoutBtn.addEventListener("click", async () => {
   showLoginUI();
 });
 
-// Inicializar en UI login
 showLoginUI();
